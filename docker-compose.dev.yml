@@ -1,0 +1,5 @@
+version: '3.8'
+
+# TODO: Add development-specific overrides if needed.
+# Baseline development stack is defined in docker-compose.yml.
+services: {}
