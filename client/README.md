@@ -1,18 +1,23 @@
 # Client (`client/`)
 
-Frontend for Enterprise RAG v1 scope using React + Vite + TypeScript + Tailwind.
+Frontend for Enterprise RAG v1 using React + Vite + TypeScript + Tailwind.
 
-Implemented scope:
-- Supabase Auth (`/login`, `/signup`)
-- Protected Home (`/home`)
-- Workspace create/show (one workspace per user)
-- Daily usage UI (used/reserved/remaining/limit/resets_at)
-- Diagnostics accordion for `GET /auth/me` and `GET /workspaces/me`
+## Implemented UI/UX Scope
 
-Design system:
-- Orange + Black + White palette only
-- Theme tokens in `src/styles/theme.ts`
-- Tailwind custom tokens in `tailwind.config.ts`
+- Auth: `/login`, `/signup`
+- Workspace creation gate: `/workspace`
+- Protected app shell with persistent sidebar + top bar: `/app/*`
+- Upload and ingestion tracking: `/app/upload`
+  - Includes per-row `Delete` action (calls `DELETE /documents/{id}`)
+- Document-context chat scaffold (stubbed reply): `/app/chat`
+- Separate workspace info page: `/app/workspace`
+
+## Theme
+
+- Background: `#FFFFFF`
+- Accent: `#F97316`
+- Primary text: `#111827`
+- Borders/surfaces: `#E5E7EB` and `#F9FAFB`
 
 ## Environment Variables
 
@@ -34,25 +39,58 @@ npm run dev
 
 Open: `http://localhost:5173`
 
-## Routes
+## Routing Flow
 
-- `/login` sign-in page
-- `/signup` sign-up page
-- `/home` protected home page
+1. Unauthenticated users land on `/login` or `/signup`.
+2. After login/signup, app redirects to `/workspace`.
+3. `/workspace`:
+   - If workspace exists: redirect to `/app/upload`
+   - If workspace is missing: show create workspace card
+4. `/app/*` is protected and uses a shared shell:
+   - `/app/upload`
+   - `/app/chat`
+   - `/app/workspace`
 
-## API Integration
+## API Contracts Used
 
-All backend requests include:
+- `GET /workspaces/me`
+- `POST /workspaces`
+- `GET /documents`
+- `POST /documents/upload-prepare`
+- `POST /documents/upload-complete`
+- `GET /documents/{id}`
+- Optional: `GET /usage/today` (fallbacks to workspace usage if unavailable)
+
+All API requests include:
 
 ```http
 Authorization: Bearer <access_token>
 ```
 
-Endpoints used:
-- `GET /auth/me`
-- `POST /workspaces`
-- `GET /workspaces/me`
-
 Behavior:
-- `401` => auto sign-out + redirect to `/login`
-- `409` on workspace create => fetch existing `/workspaces/me` and display
+- Global `401` handling signs out and redirects to `/login`
+- `/app/upload` polls documents every 4 seconds while docs are still processing
+
+## Upload Pipeline UX
+
+Per file upload task states:
+
+- `queued`
+- `preparing`
+- `uploading`
+- `completing`
+- backend-driven: `extracting`, `indexing`, `indexed`, `failed`
+
+The upload queue supports multiple files (up to 100) with client-side concurrency limit of 4.
+
+## Manual Test Plan
+
+1. Sign up or log in.
+2. Confirm redirect to `/workspace`.
+3. If prompted, create workspace.
+4. Confirm redirect to `/app/upload`.
+5. Upload multiple PDFs and watch per-file state changes.
+6. Wait until at least one document reaches `Indexed`.
+7. Select the indexed document from the left sidebar and verify navigation to `/app/chat`.
+8. Send a message in chat and verify stub response appears.
+9. Open `/app/workspace`, verify usage metrics, document counts, and refresh behavior.

@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -18,52 +14,50 @@ body,
 
 body {
   margin: 0;
-  background-color: #0b0b0f;
-  color: #ffffff;
+  background: #ffffff;
+  color: #111827;
   font-family: "Inter", "Segoe UI", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
 ::selection {
-  background: rgba(249, 115, 22, 0.32);
+  background: rgba(249, 115, 22, 0.2);
+}
+
+@layer components {
+  .app-input {
+    @apply w-full rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm text-app-text outline-none transition placeholder:text-app-muted focus:border-app-accent focus:ring-2 focus:ring-app-accent/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-app-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-app-accentDark disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-app-accent bg-white px-4 py-2.5 text-sm font-semibold text-app-text transition hover:bg-app-accentSoft disabled:cursor-not-allowed disabled:opacity-60;
+  }
 }
 
 @layer utilities {
   .spinner {
     width: 1rem;
     height: 1rem;
-    border: 2px solid rgba(11, 11, 15, 0.25);
-    border-top-color: #0b0b0f;
+    border: 2px solid rgba(17, 24, 39, 0.2);
+    border-top-color: #f97316;
     border-radius: 9999px;
     animation: spin 0.8s linear infinite;
-  }
-
-  .skeleton {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(100deg, #1a1a26 30%, #2a2a36 50%, #1a1a26 70%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s ease-in-out infinite;
   }
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
   }
 }

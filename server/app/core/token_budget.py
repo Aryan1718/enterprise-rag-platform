@@ -160,11 +160,21 @@ def get_budget_status(
     usage_date = _as_utc_date(usage_date_utc)
     token_limit = int(settings.DAILY_TOKEN_LIMIT)
 
-    with _transaction_context(db):
-        row = get_or_create_daily_row(db, workspace_id, usage_date)
+    # Read-only status lookup for UI endpoints; avoid row creation/locking here
+    # to prevent timeout under concurrent token reservations.
+    row = db.execute(
+        select(WorkspaceDailyUsage).where(
+            WorkspaceDailyUsage.workspace_id == workspace_id,
+            WorkspaceDailyUsage.date == usage_date,
+        )
+    ).scalar_one_or_none()
+    if row is None:
+        used = 0
+        reserved = 0
+    else:
         used = int(row.tokens_used)
         reserved = int(row.tokens_reserved)
-        remaining = max(0, token_limit - (used + reserved))
+    remaining = max(0, token_limit - (used + reserved))
 
     return {
         "used": used,

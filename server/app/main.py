@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, documents, query, usage, workspaces
+from app.api import auth, chats, citations, documents, queries, query, query_stream, usage, workspaces
 
 app = FastAPI(title="Enterprise RAG API", version="1.0.0")
 
@@ -21,7 +21,11 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(workspaces.router, prefix="/workspaces", tags=["workspaces"])
 app.include_router(documents.router, prefix="/documents", tags=["documents"])
+app.include_router(citations.router, prefix="/citations", tags=["citations"])
 app.include_router(query.router, prefix="/query", tags=["query"])
+app.include_router(query_stream.router, prefix="/query", tags=["query"])
+app.include_router(queries.router, prefix="/queries", tags=["queries"])
+app.include_router(chats.router, prefix="/chats", tags=["chats"])
 app.include_router(usage.router, prefix="/usage", tags=["usage"])
 
 

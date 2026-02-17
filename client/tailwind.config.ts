@@ -6,24 +6,25 @@ const config: Config = {
     extend: {
       colors: {
         app: {
-          bg: "#0B0B0F",
-          surface: "#12121A",
-          elevated: "#1A1A26",
-          border: "#2A2A36",
-          text: "#FFFFFF",
-          muted: "#C8CBD2",
+          bg: "#FFFFFF",
+          surface: "#F9FAFB",
+          border: "#E5E7EB",
+          text: "#111827",
+          muted: "#6B7280",
           accent: "#F97316",
-          accentSoft: "#FDBA74",
-          danger: "#EF4444",
-          success: "#22C55E",
+          accentDark: "#EA580C",
+          accentSoft: "#FFF7ED",
+          danger: "#DC2626",
+          success: "#16A34A",
+          warning: "#D97706",
         },
       },
-      boxShadow: {
-        card: "0 20px 45px -28px rgba(0, 0, 0, 0.8)",
-        glow: "0 0 0 1px rgba(249, 115, 22, 0.2), 0 0 60px rgba(249, 115, 22, 0.18)",
+      borderRadius: {
+        xl: "12px",
+        "2xl": "14px",
       },
-      backgroundImage: {
-        "auth-glow": "radial-gradient(circle at top left, rgba(249,115,22,0.32), rgba(11,11,15,0) 40%), radial-gradient(circle at bottom right, rgba(249,115,22,0.2), rgba(11,11,15,0) 45%)",
+      boxShadow: {
+        card: "0 8px 24px rgba(17, 24, 39, 0.06)",
       },
     },
   },

@@ -9,11 +9,9 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-app-bg px-4">
-        <div className="rounded-xl border border-app-border bg-app-surface px-5 py-4 text-sm text-app-muted shadow-card">
-          <span className="inline-flex items-center gap-2">
-            <span className="spinner" aria-hidden="true" />
-            Restoring session...
-          </span>
+        <div className="inline-flex items-center gap-2 rounded-xl border border-app-border bg-app-surface px-4 py-3 text-sm text-app-muted">
+          <span className="spinner" aria-hidden="true" />
+          Restoring session...
         </div>
       </main>
     );

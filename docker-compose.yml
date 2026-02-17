@@ -134,7 +134,7 @@ services:
       - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     volumes:
       - ./client:/app
-      - /app/node_modules
+      - client_node_modules:/app/node_modules
     ports:
       - "5173:5173"
     command: npm run dev -- --host 0.0.0.0
@@ -142,3 +142,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  client_node_modules:

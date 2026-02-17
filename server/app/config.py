@@ -1,5 +1,6 @@
 from datetime import UTC, date, datetime, time, timedelta
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,9 +15,23 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     SUPABASE_KEY: str = ""
+    SUPABASE_STORAGE_BUCKET: str = "documents"
+    UPLOAD_URL_EXPIRES_SECONDS: int = 600
 
     DAILY_TOKEN_LIMIT: int = 100000
     RESERVATION_TTL_SECONDS: int = 600
+    OPENAI_API_KEY: str = ""
+    LLM_MODEL: str = "gpt-4o-mini"
+    LLM_TIMEOUT_SECONDS: int = 30
+    LLM_MAX_OUTPUT_TOKENS: int = 2000
+    TOP_K: int = 5
+    MAX_QUESTION_CHARS: int = 500
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    EMBEDDING_DIM: int = 1536
+    LOG_EACH_QUERY: bool = False
+    MAX_FILE_SIZE_BYTES: int = 20 * 1024 * 1024
+    MAX_DOCUMENTS_PER_WORKSPACE: int = 100
+    ALLOWED_CONTENT_TYPES: list[str] = Field(default_factory=lambda: ["application/pdf"])
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

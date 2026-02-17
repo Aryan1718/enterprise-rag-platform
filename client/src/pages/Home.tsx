@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 
 import DiagnosticsAccordion from "../components/DiagnosticsAccordion";
 import StatsCard from "../components/StatsCard";
@@ -6,7 +7,7 @@ import Toast, { type ToastState } from "../components/Toast";
 import UsageProgress from "../components/UsageProgress";
 import WorkspaceCard from "../components/WorkspaceCard";
 import { useAuth } from "../context/AuthContext";
-import { apiCreateWorkspace, apiGetAuthMe, apiGetWorkspaceMe, ApiError } from "../lib/api";
+import { apiCreateWorkspace, apiGetAuthMe, apiGetWorkspaceMe, apiUploadDocument, ApiError } from "../lib/api";
 import { appName } from "../styles/theme";
 import type { UsageTodayResponse, WorkspaceMeResponse } from "../types/api";
 
@@ -47,6 +48,8 @@ export default function Home() {
   const [diagnosticsLoading, setDiagnosticsLoading] = useState(false);
   const [authMeJson, setAuthMeJson] = useState<string>("{\n  \"message\": \"No diagnostics fetched yet\"\n}");
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<string>("");
 
   const showToast = useCallback((message: string, type: "success" | "error") => {
     setToast({ id: Date.now(), message, type });
@@ -128,6 +131,37 @@ export default function Home() {
     () => JSON.stringify(workspace ?? { message: "No workspace loaded" }, null, 2),
     [workspace],
   );
+  const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+    if (!accessToken) {
+      showToast("Missing access token.", "error");
+      return;
+    }
+    if (file.type !== "application/pdf") {
+      showToast("Only PDF files are supported.", "error");
+      return;
+    }
+
+    setUploading(true);
+    setUploadResult("");
+    try {
+      const result = await apiUploadDocument(accessToken, file);
+      const message = `Uploaded: ${result.document_id} (job ${result.job_id})`;
+      setUploadResult(message);
+      showToast("Upload completed and ingestion queued.", "success");
+      await fetchWorkspace();
+    } catch (error) {
+      const message = parseApiError(error);
+      setUploadResult(message);
+      showToast(message, "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-app-bg px-4 py-6">
@@ -182,6 +216,21 @@ export default function Home() {
             resetsAt={usage.resetsAt}
             loading={workspaceLoading}
           />
+        </section>
+
+        <section className="rounded-xl border border-app-border bg-app-surface/95 p-4 shadow-card backdrop-blur">
+          <h2 className="mb-2 text-lg font-semibold text-app-text">Upload PDF</h2>
+          <p className="mb-3 text-sm text-app-muted">Uses /documents/upload-prepare + signed URL + /documents/upload-complete.</p>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => void handleUpload(e)}
+            disabled={uploading || !workspace}
+            className="mb-3 block w-full text-sm text-app-text file:mr-3 file:rounded-md file:border file:border-app-accent/60 file:bg-app-elevated file:px-3 file:py-2 file:text-app-text"
+          />
+          <div className="text-sm text-app-muted">
+            {uploading ? "Uploading..." : uploadResult || "Select a PDF to test upload from frontend."}
+          </div>
         </section>
 
         <DiagnosticsAccordion

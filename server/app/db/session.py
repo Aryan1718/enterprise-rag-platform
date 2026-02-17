@@ -10,6 +10,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def create_session_local(database_url: str):
+    worker_engine = create_engine(database_url, pool_pre_ping=True)
+    return sessionmaker(autocommit=False, autoflush=False, bind=worker_engine)
+
+
 # TODO: Move DB initialization into Alembic-managed migrations only.
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()

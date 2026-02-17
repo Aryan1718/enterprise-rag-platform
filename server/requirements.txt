@@ -25,6 +25,7 @@ openai==1.10.0
 
 # PDF Processing
 unstructured==0.12.0
+pypdf==4.2.0
 pdf2image==1.17.0
 pillow==10.2.0
 

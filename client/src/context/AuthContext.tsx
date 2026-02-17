@@ -12,6 +12,7 @@ type SignUpResult = {
 type AuthContextValue = {
   session: Session | null;
   user: User | null;
+  accessToken: string | null;
   access_token: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       session,
       user: session?.user ?? null,
+      accessToken: session?.access_token ?? null,
       access_token: session?.access_token ?? null,
       loading,
       signIn: async (email: string, password: string) => {

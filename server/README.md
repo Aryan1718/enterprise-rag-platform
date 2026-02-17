@@ -170,3 +170,13 @@ Planned next backend milestones (aligned with locked architecture):
 - add workspace-scoped rate limiting and structured logging
 - complete repository layer under `app/db/repositories/`
 - expand Alembic migrations and integration tests beyond health/token-budget
+
+## Rate Limiting
+
+Rate limiting is implemented with Redis counters:
+
+- `POST /query`: enforced in `server/app/api/query.py` (`_enforce_query_rate_limit`, 100 requests / 60s / workspace).
+- `POST /documents/upload-prepare`: enforced in `server/app/api/documents.py` via `app.utils.rate_limit.enforce_workspace_rate_limit` (10 requests / 60s / workspace).
+- `POST /documents/upload-complete`: enforced in `server/app/api/documents.py` via the same limiter (20 requests / 60s / workspace).
+- `POST /documents/{document_id}/retry`: enforced in `server/app/api/documents.py` using the document mutation limiter (20 requests / 60s / workspace).
+- `POST /documents/{document_id}/reindex`: enforced in `server/app/api/documents.py` using the document mutation limiter (20 requests / 60s / workspace).

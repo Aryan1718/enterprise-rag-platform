@@ -45,3 +45,17 @@ export type ApiResponseError = {
   status: number;
   payload: unknown;
 };
+
+export type UploadPrepareResponse = {
+  document_id: string;
+  bucket: string;
+  storage_path: string;
+  upload_url: string;
+  expires_in: number;
+};
+
+export type UploadCompleteResponse = {
+  document_id: string;
+  status: string;
+  job_id: string;
+};
